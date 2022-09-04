@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48461869d1d37fa48a27ae4545b7b9b9, type: 3}
+  m_Name: TestSlime
+  m_EditorClassIdentifier: 
+  creatureName: Slime
+  creatureNumber: 001
+  creatureDescription: After a cup of Jello fell into a pool of radioactive chemicals
+    it sprung alive into a small slime-like creature.
+  creatureImageFront: {fileID: 0}
+  creatureImageBack: {fileID: 0}
+  creatureLevel: 1
+  healthStat: 15
+  attackStat: 3
+  defenseStat: 2
+  speedStat: 5
+  moveOne: {fileID: 11400000, guid: 69114cf88b2e92d4f84048a9efbfb8f3, type: 2}
+  moveTwo: {fileID: 11400000, guid: 5c43adba59219a746b1e72e07f26230e, type: 2}
+  moveThree: {fileID: 11400000, guid: c0905d174aa60114ca165332dd425ed4, type: 2}
+  moveFour: {fileID: 11400000, guid: befe61b995ff79d479dc71557613d273, type: 2}
+  creatureType: 2
