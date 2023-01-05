@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -8,11 +9,12 @@ public class GameController : MonoBehaviour
         //Game Objects
     public GameObject chessPiece;
     private GameObject[,] positions = new GameObject[8,8];
-    private GameObject[] playerBlack = new GameObject[16];
-    private GameObject[] playerWhite = new GameObject[16];
+    public GameObject[] playerBlack = new GameObject[16];
+    public GameObject[] playerWhite = new GameObject[16];
         //Check for whose turn and if it is check
     private bool isWhitesTurn = true;
-    private bool isCheck = false;
+    private bool isCheckWhite = false;
+    private bool isCheckBlack = false;
     private bool isCheckMate = false;
         //Integer and Floats
     private float[] adjustSpawn = { 1.22f, -4.275f }; //Adjusts the spawn to fit our cortinate system
@@ -45,6 +47,11 @@ public class GameController : MonoBehaviour
             SetPosition(playerBlack[i]);
             SetPosition(playerWhite[i]);
         }
+
+        playerBlack[0].GetComponent<ChessPieceController>().SetRookLocation("Right");
+        playerWhite[0].GetComponent<ChessPieceController>().SetRookLocation("Left");
+        playerBlack[7].GetComponent<ChessPieceController>().SetRookLocation("Left");
+        playerWhite[7].GetComponent<ChessPieceController>().SetRookLocation("Right");
     }
 
    public GameObject Create(string pieceName, int x, int y) //This create function allows us to use our array from earlier to assign attributes to our pieces, like name and position
@@ -102,4 +109,93 @@ public class GameController : MonoBehaviour
         print("White Points: " + whitePoints + ". Black Points: " + blackPoints);
     }
 
+    public void ChangePlayerTurn(string player)
+    {
+        if(player == "White")
+        {
+            isWhitesTurn = true;
+        } else if(player == "Black")
+        {
+            isWhitesTurn = false; 
+        }
+    }
+    public string GetCurrentPlayersTurn()
+    {
+        if (isWhitesTurn)
+        {
+            return "White";
+        } else
+        {
+            return "Black";
+        }
+    }
+
+    public void ChangeCheck(string player, bool isChecked)
+    {
+        if(player == "White")
+        {
+            isCheckWhite = isChecked;
+        } else if(player == "Black")
+        {
+            isCheckBlack = isChecked;   
+        } else
+        {
+            Debug.Log("Something is wrong with the checking process.");
+        }
+    }
+
+    public string CheckCheck()
+    {
+        if(isCheckWhite)
+        {
+            return "WhiteCheck";
+        } else if(isCheckBlack)
+        {
+            return "BlackCheck";
+        } else
+        {
+            return null;
+        }
+    }
+
+    public bool IsCheckMate()
+    {
+        return isCheckMate;
+    }
+
+
+    public GameObject GetRook(string player, string position)
+    {
+        if(player == "White")
+        {
+
+            if(position == "Left")
+            {
+                return playerWhite[0];
+
+            } else
+            {
+                return playerWhite[7];
+            }
+
+        }else if(player == "Black")
+        {
+            if(position == "Left")
+            {
+                return playerBlack[7];
+            } else
+            {
+                return playerBlack[0];
+            }
+
+        } else
+        {
+            return null;
+        }
+    }
+
+    public GameObject GetPositions(int x1,int y1)
+    {
+        return positions[x1,y1];
+    }
 }

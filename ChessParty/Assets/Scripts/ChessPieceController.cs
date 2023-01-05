@@ -12,14 +12,20 @@ public class ChessPieceController : MonoBehaviour
     private int xBoard = -1;
     private int yBoard = -1;
     public float[] adjustSpawn = { .66f, -2.3f };
-    //Piece Idenity
+        //Piece Idenity
     private bool isWhite; //If false our piece is black
     public int pieceCode; //Relates to the string piece name so 0 is queen, 5 is pawn=5
     public int points;
     public bool isPawnFirstMove;
+    public string rookLocation = "default";
+    public bool isKingsFirstMove;
+    public bool isRooksFirstMove;
         //Sprite Renderer
     public Sprite blackQueenS, blackKingS, blackRookS, blackKnightS, blackBishopS, blackPawnS;
     public Sprite whiteKingS, whiteQueenS, whiteRookS, whiteKnightS, whiteBishopS, whitePawnS;
+        //Misc Variables
+    private string turn;
+    private bool isCastling;
 
     public void Activate()
     {
@@ -39,12 +45,14 @@ public class ChessPieceController : MonoBehaviour
             case "BlackKing":
                 this.GetComponent<SpriteRenderer>().sprite = blackKingS;
                 isWhite = false;
+                isKingsFirstMove = true;
                 pieceCode = 1;
                 break;
 
             case "BlackRook":
                 this.GetComponent<SpriteRenderer>().sprite = blackRookS;
                 isWhite = false;
+                isRooksFirstMove = true;
                 pieceCode = 2;
                 points = 5;
                 break;
@@ -81,12 +89,14 @@ public class ChessPieceController : MonoBehaviour
             case "WhiteKing":
                 this.GetComponent<SpriteRenderer>().sprite = whiteKingS;
                 isWhite = true;
+                isKingsFirstMove = true;
                 pieceCode = 1;
                 break;
 
             case "WhiteRook":
                 this.GetComponent<SpriteRenderer>().sprite = whiteRookS;
                 isWhite = true;
+                isRooksFirstMove = true;
                 pieceCode = 2;
                 points = 5;
                 break;
@@ -160,35 +170,122 @@ public class ChessPieceController : MonoBehaviour
 
     public void InitMovePlates()
     {
+        if (gameController.GetComponent<GameController>().GetCurrentPlayersTurn() == "White")
+        {
+            turn = "White";
+        } else
+        {
+            turn = "Black";
+        }
         switch (pieceCode)
         {
             case 0: //Queen
-                LineMovePlate(1,0); LineMovePlate(0, 1); LineMovePlate(1, 1); LineMovePlate(-1, 0); LineMovePlate(0, -1); LineMovePlate(-1, -1); LineMovePlate(1, -1); LineMovePlate(-1, 1);
+                if(isWhite && turn == "White")
+                {
+                    LineMovePlate(1, 0); LineMovePlate(0, 1); LineMovePlate(1, 1); LineMovePlate(-1, 0); LineMovePlate(0, -1); LineMovePlate(-1, -1); LineMovePlate(1, -1); LineMovePlate(-1, 1);
+                } else if(!isWhite && turn == "Black")
+                {
+                    LineMovePlate(1, 0); LineMovePlate(0, 1); LineMovePlate(1, 1); LineMovePlate(-1, 0); LineMovePlate(0, -1); LineMovePlate(-1, -1); LineMovePlate(1, -1); LineMovePlate(-1, 1);
+                }
                 break;
 
             case 1: //King
-                SurroundMovePlate();
+                if(isWhite && turn == "White")
+                {
+                    SurroundMovePlate();
+
+                    if(isKingsFirstMove)
+                    {
+                        if (gameController.GetComponent<GameController>().CheckCheck() != "WhiteCheck")
+                        {
+                            GameObject rookLeft = gameController.GetComponent<GameController>().GetRook("White", "Left");
+                            GameObject rookRight = gameController.GetComponent<GameController>().GetRook("White", "Right");
+
+                            if(rookLeft.GetComponent<ChessPieceController>().isRooksFirstMove == true)
+                            {
+                                CastleMovePlate("Left");
+                            }
+
+                            if(rookRight.GetComponent<ChessPieceController>().isRooksFirstMove == true)
+                            {
+                                CastleMovePlate("Right");
+                            }
+                        }
+                    }
+
+                } else if(!isWhite && turn == "Black")
+                {
+                    SurroundMovePlate();
+
+                    if (isKingsFirstMove)
+                    {
+                        if (gameController.GetComponent<GameController>().CheckCheck() != "BlackCheck")
+                        {
+                            GameObject rookLeft = gameController.GetComponent<GameController>().GetRook("Black", "Left");
+                            GameObject rookRight = gameController.GetComponent<GameController>().GetRook("Black", "Right");
+
+                            if (rookLeft.GetComponent<ChessPieceController>().isRooksFirstMove == true)
+                            {
+                                CastleMovePlate("Left");
+                            }
+
+                            if (rookRight.GetComponent<ChessPieceController>().isRooksFirstMove == true)
+                            {
+                                CastleMovePlate("Right");
+                            }
+                        }
+                    }
+
+                }
+
                 break;
 
             case 2: //Rook
-                LineMovePlate(0,1);
-                LineMovePlate(0, -1);
-                LineMovePlate(-1, 0);
-                LineMovePlate(1, 0);
+                if(isWhite && turn == "White")
+                {
+                    LineMovePlate(0, 1);
+                    LineMovePlate(0, -1);
+                    LineMovePlate(-1, 0);
+                    LineMovePlate(1, 0);
+                } else if (!isWhite && turn == "Black")
+                {
+                    LineMovePlate(0, 1);
+                    LineMovePlate(0, -1);
+                    LineMovePlate(-1, 0);
+                    LineMovePlate(1, 0);
+                }
                 break;
 
             case 3: //Knight
-                LMovePlate();
+                if(isWhite && turn == "White")
+                {
+                    LMovePlate();
+                } else if(!isWhite && turn == "Black")
+                {
+                    LMovePlate();
+                }
+
                 break;
 
             case 4: //Bishop
-                LineMovePlate(1, 1);
-                LineMovePlate(1, -1);
-                LineMovePlate(-1, 1);
-                LineMovePlate(-1, -1);
+                if(isWhite && turn == "White")
+                {
+                    LineMovePlate(1, 1);
+                    LineMovePlate(1, -1);
+                    LineMovePlate(-1, 1);
+                    LineMovePlate(-1, -1);
+
+                } else if(!isWhite && turn == "Black")
+                {
+                    LineMovePlate(1, 1);
+                    LineMovePlate(1, -1);
+                    LineMovePlate(-1, 1);
+                    LineMovePlate(-1, -1);
+                }
+
                 break;
             case 5: //Pawn
-                if (isWhite)
+                if (isWhite && turn == "White")
                 {
 
                     if(isPawnFirstMove == true)
@@ -198,7 +295,7 @@ public class ChessPieceController : MonoBehaviour
                         PawnMovePlate(xBoard, yBoard + 1, false);
 
                 }
-                if(!isWhite)
+                if(!isWhite && turn == "Black")
                 {
                     if (isPawnFirstMove == true)
                     {
@@ -257,6 +354,47 @@ public class ChessPieceController : MonoBehaviour
         }
     }
 
+    public void CastleMovePlate(string rookPos)
+    {
+        int secondCord = 0;
+        if (isWhite) { secondCord = 0; }
+        else { secondCord = 7; }
+        GameObject reference;
+        GameObject rookRightW = gameController.GetComponent<GameController>().GetRook("White", "Right");
+        GameObject rookLeft = gameController.GetComponent<GameController>().GetRook("Black", "Left");
+        GameObject rookRight = gameController.GetComponent<GameController>().GetRook("Black", "Right");
+        isCastling = true;
+
+        if (rookPos == "Left")
+        {
+            if(isWhite && gameController.GetComponent<GameController>().GetPositions(1,secondCord) == null && gameController.GetComponent<GameController>().GetPositions(2, secondCord) == null && gameController.GetComponent<GameController>().GetPositions(3, secondCord) == null)
+            {
+                PointMovePlate(xBoard - 2, yBoard);
+                reference = gameController.GetComponent<GameController>().GetRook("White", "Left");
+            }
+
+            if (!isWhite && gameController.GetComponent<GameController>().GetPositions(5, secondCord) == null && gameController.GetComponent<GameController>().GetPositions(6, secondCord) == null)
+            {
+                PointMovePlate(xBoard + 2, yBoard);
+                reference = gameController.GetComponent<GameController>().GetRook("Black", "Left"); //WHOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+            }
+
+        }
+
+        if(rookPos == "Right")
+        {
+            if (!isWhite && gameController.GetComponent<GameController>().GetPositions(1, secondCord) == null && gameController.GetComponent<GameController>().GetPositions(2, secondCord) == null && gameController.GetComponent<GameController>().GetPositions(3, secondCord) == null)
+            {
+                PointMovePlate(xBoard - 2, yBoard);
+            }
+
+            if (isWhite && gameController.GetComponent<GameController>().GetPositions(5, secondCord) == null && gameController.GetComponent<GameController>().GetPositions(6, secondCord) == null)
+            {
+                PointMovePlate(xBoard + 2, yBoard);
+            }
+        }
+    }
+
     public void LMovePlate()
     {
         PointMovePlate(xBoard + 1, yBoard + 2);
@@ -301,6 +439,7 @@ public class ChessPieceController : MonoBehaviour
         }
     } 
 
+
     public void MovePlateSpawn(int matrixX, int matrixY, bool attack)
     {
         float x = matrixX;
@@ -328,6 +467,12 @@ public class ChessPieceController : MonoBehaviour
     public bool GetIsWhite()
     {
         return isWhite;
+    }
+
+    public void SetRookLocation(string location)
+    {
+
+            rookLocation = location;
     }
 
 }
