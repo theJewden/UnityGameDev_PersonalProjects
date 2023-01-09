@@ -31,13 +31,17 @@ public class MovePlateController : MonoBehaviour
 
         if (attack)
         {
+            ///When a piece attacks another piece
+
             bool isBlack;
             GameObject chessPiece = gameController.GetComponent<GameController>().GetPosition(matrixX, matrixY); //Get the position of the piece we are attacking
-            points = chessPiece.GetComponent<ChessPieceController>().points;
-            isBlack = !chessPiece.GetComponent<ChessPieceController>().GetIsWhite();
-            gameController.GetComponent<GameController>().ChangePlayerPoints(points, isBlack);
+            points = chessPiece.GetComponent<ChessPieceController>().points; //Grabs the points of the current piece being attacked
+            isBlack = !chessPiece.GetComponent<ChessPieceController>().GetIsWhite(); //Tells us the color of the piece
+            gameController.GetComponent<GameController>().ChangePlayerPoints(points, isBlack); //Using the points of the other piece adjust the points based on the color of the piece and the worth of the points
             Destroy(chessPiece); //Destroy the piece we are attacking
         }
+
+        /// When a piece is moving or attacking (Do this after moving or attacking)
 
         gameController.GetComponent<GameController>().SetPositionEmpty(reference.GetComponent<ChessPieceController>().GetXBoard(), reference.GetComponent<ChessPieceController>().GetYBoard()); //Gets the current position of the piece we want to move
         reference.GetComponent<ChessPieceController>().SetXBoard(matrixX); //Move that piece to the x position (Board Position, not World)
@@ -49,17 +53,12 @@ public class MovePlateController : MonoBehaviour
             reference.GetComponent<ChessPieceController>().isPawnFirstMove = false;
         }
 
-        if(reference.GetComponent<ChessPieceController>().pieceCode == 1)
-        {
-            reference.GetComponent<ChessPieceController>().isKingsFirstMove = false;
-        }
-
-        if (reference.GetComponent<ChessPieceController>().pieceCode == 2)
+        if (reference.GetComponent<ChessPieceController>().pieceCode == 2) //If this piece is a rook, check if it is the first move
         {
             reference.GetComponent<ChessPieceController>().isRooksFirstMove = false;
         }
 
-        if (gameController.GetComponent<GameController>().GetCurrentPlayersTurn() == "White")
+        if (gameController.GetComponent<GameController>().GetCurrentPlayersTurn() == "White") //Check for the current player's turn then switch the turn after moving
         {
             gameController.GetComponent<GameController>().ChangePlayerTurn("Black");
         } else
@@ -67,9 +66,20 @@ public class MovePlateController : MonoBehaviour
             gameController.GetComponent<GameController>().ChangePlayerTurn("White");
         }
 
-        gameController.GetComponent<GameController>().SetPosition(reference); //Keeps track of where our piece is in the code
+        gameController.GetComponent<GameController>().SetPosition(reference); //Keeps track of where our piece is in our chess grid
 
         reference.GetComponent<ChessPieceController>().DestroyMovePlates();
+
+
+        if (reference.GetComponent<ChessPieceController>().pieceCode == 1) //If this piece is a king, check if it is the first move
+        {
+            reference.GetComponent<ChessPieceController>().isKingsFirstMove = false;
+            if (reference.GetComponent<ChessPieceController>().CheckHasCastled() == false)
+            {
+                reference.GetComponent<ChessPieceController>().SetHasCastled(true);
+                MoveRook(reference);
+            }
+        }
     }
 
     public void SetCords(int x, int y) // Allows us to set the cordinates of the Moveplates
@@ -88,14 +98,15 @@ public class MovePlateController : MonoBehaviour
         return reference;
     }
 
-    public void MoveRook(GameObject reference, bool isDoing)
+    public void MoveRook(GameObject reference) // Checks if the King is currently castling, if so move the rook with the king.
     {
+            //Find the rooks
         GameObject rookLeftWhite = gameController.GetComponent<GameController>().playerWhite[0];
         GameObject rookRightWhite = gameController.GetComponent<GameController>().playerWhite[7];
         GameObject rookLeftBlack = gameController.GetComponent<GameController>().playerBlack[7];
         GameObject rookRightBlack = gameController.GetComponent<GameController>().playerBlack[0];
 
-        if (reference.GetComponent<ChessPieceController>().pieceCode == 1 && isDoing)
+        if (reference.GetComponent<ChessPieceController>().pieceCode == 1)
         {
             bool isWhite = reference.GetComponent<ChessPieceController>().GetIsWhite();
             if (isWhite)
@@ -119,7 +130,7 @@ public class MovePlateController : MonoBehaviour
                         MoveRookCords(rookRightBlack, 3, 7);
                     }
 
-                    if (gameController.GetComponent<GameController>().GetPositions(6, 0) == reference)
+                    if (gameController.GetComponent<GameController>().GetPositions(6, 7) == reference)
                     {
                         MoveRookCords(rookLeftBlack, 5, 7);
                     }
@@ -129,7 +140,7 @@ public class MovePlateController : MonoBehaviour
         }
     }
 
-    public void MoveRookCords(GameObject reference, int xCord, int yCord)
+    public void MoveRookCords(GameObject reference, int xCord, int yCord) //Updates our rook's position
     {
         reference.GetComponent<ChessPieceController>().SetXBoard(xCord); //Move that piece to the x position (Board Position, not World)
         reference.GetComponent<ChessPieceController>().SetYBoard(yCord); //Move that piece to the y position (Board Position, not World)
