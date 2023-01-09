@@ -26,10 +26,13 @@ public class ChessPieceController : MonoBehaviour
         //Misc Variables
     private string turn;
     private bool isCastling;
+    private bool hasCastled;
 
     public void Activate()
     {
         gameController = GameObject.FindGameObjectWithTag("GameController"); //Find the Game Controller and set it to our variable
+
+        ///Creates the chess pieces and sets some basic values
 
         SetCords();
 
@@ -125,7 +128,9 @@ public class ChessPieceController : MonoBehaviour
         }
     }
 
-    public void SetCords()
+    ///Set Cordinates
+
+    public void SetCords() //Adjusts the X and Y value that Unity uses into our chess cords/grid
     {
         float x = xBoard;
         float y = yBoard;
@@ -138,6 +143,9 @@ public class ChessPieceController : MonoBehaviour
 
         this.transform.position = new Vector3(x, y, 0);
     }
+
+
+    ///Get and Change the private xboard and yboard vars
 
     public int GetXBoard()
     {
@@ -158,9 +166,12 @@ public class ChessPieceController : MonoBehaviour
         yBoard = num;
     }
 
+    ///MovePlate Functions
+
     public void DestroyMovePlates()
     {
         GameObject[] movePlates = GameObject.FindGameObjectsWithTag("MovePlate");
+        isCastling = false;
         for(int i = 0; i < movePlates.Length; i++)
         {
             Destroy(movePlates[i]);
@@ -168,7 +179,7 @@ public class ChessPieceController : MonoBehaviour
     }
 
 
-    public void InitMovePlates()
+    public void InitMovePlates() //Creates moveplates based on piece and color
     {
         if (gameController.GetComponent<GameController>().GetCurrentPlayersTurn() == "White")
         {
@@ -192,9 +203,9 @@ public class ChessPieceController : MonoBehaviour
             case 1: //King
                 if(isWhite && turn == "White")
                 {
-                    SurroundMovePlate();
+                    SurroundMovePlate(); //Normal King Movement
 
-                    if(isKingsFirstMove)
+                    if(isKingsFirstMove) //If King can castle
                     {
                         if (gameController.GetComponent<GameController>().CheckCheck() != "WhiteCheck")
                         {
@@ -204,11 +215,27 @@ public class ChessPieceController : MonoBehaviour
                             if(rookLeft.GetComponent<ChessPieceController>().isRooksFirstMove == true)
                             {
                                 CastleMovePlate("Left");
+                                if (!hasCastled)
+                                {
+                                    isCastling = true;
+                                }
+                                else
+                                {
+                                    isCastling = false;
+                                }
                             }
 
                             if(rookRight.GetComponent<ChessPieceController>().isRooksFirstMove == true)
                             {
                                 CastleMovePlate("Right");
+                                if (!hasCastled)
+                                {
+                                    isCastling = true;
+                                }
+                                else
+                                {
+                                    isCastling = false;
+                                }
                             }
                         }
                     }
@@ -217,7 +244,7 @@ public class ChessPieceController : MonoBehaviour
                 {
                     SurroundMovePlate();
 
-                    if (isKingsFirstMove)
+                    if (isKingsFirstMove && pieceCode == 1)
                     {
                         if (gameController.GetComponent<GameController>().CheckCheck() != "BlackCheck")
                         {
@@ -227,11 +254,26 @@ public class ChessPieceController : MonoBehaviour
                             if (rookLeft.GetComponent<ChessPieceController>().isRooksFirstMove == true)
                             {
                                 CastleMovePlate("Left");
+                                if(!hasCastled)
+                                {
+                                    isCastling = true;
+                                } else
+                                {
+                                    isCastling = false;
+                                }
                             }
 
                             if (rookRight.GetComponent<ChessPieceController>().isRooksFirstMove == true)
                             {
                                 CastleMovePlate("Right");
+                                if (!hasCastled)
+                                {
+                                    isCastling = true;
+                                }
+                                else
+                                {
+                                    isCastling = false;
+                                }
                             }
                         }
                     }
@@ -473,6 +515,21 @@ public class ChessPieceController : MonoBehaviour
     {
 
             rookLocation = location;
+    }
+
+    public void SetHasCastled(bool truFal) //Set if a piece has castled
+    {
+        hasCastled = truFal;
+    }
+
+    public bool CheckHasCastled()
+    {
+        return hasCastled;
+    }
+
+    public bool CheckIsCastling() //Check if the piece is castling
+    {
+        return isCastling;
     }
 
 }
