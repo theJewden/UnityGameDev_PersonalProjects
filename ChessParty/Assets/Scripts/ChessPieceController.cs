@@ -20,6 +20,8 @@ public class ChessPieceController : MonoBehaviour
     public string rookLocation = "default";
     public bool isKingsFirstMove;
     public bool isRooksFirstMove;
+    private bool canPassant = false;
+    private bool hasPassant = false;
         //Sprite Renderer
     public Sprite blackQueenS, blackKingS, blackRookS, blackKnightS, blackBishopS, blackPawnS;
     public Sprite whiteKingS, whiteQueenS, whiteRookS, whiteKnightS, whiteBishopS, whitePawnS;
@@ -527,9 +529,26 @@ public class ChessPieceController : MonoBehaviour
         return hasCastled;
     }
 
-    public bool CheckIsCastling() //Check if the piece is castling
+    public void SetPassant(bool truFal)
     {
-        return isCastling;
+        if(!hasPassant)
+        {
+            canPassant = truFal;
+        } else
+        {
+            Debug.Log("This pawn cannot passant since it's canPassant value is set to true");
+        }
+
+    }
+
+    public void SetHasPassant(bool truFal)
+    {
+        hasPassant = truFal;
+    }
+
+    public bool CheckPassant()
+    {
+        return canPassant;
     }
 
 }

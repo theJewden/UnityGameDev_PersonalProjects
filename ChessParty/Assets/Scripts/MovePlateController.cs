@@ -48,9 +48,11 @@ public class MovePlateController : MonoBehaviour
         reference.GetComponent<ChessPieceController>().SetYBoard(matrixY); //Move that piece to the y position (Board Position, not World)
         reference.GetComponent<ChessPieceController>().SetCords(); //Sets the Board postion to work with the world position
 
-        if(reference.GetComponent<ChessPieceController>().pieceCode == 5) //If the piece that we are moving is a pawn, check if it is the first move
+
+        if(reference.GetComponent<ChessPieceController>().pieceCode == 5 && reference.GetComponent<ChessPieceController>().isPawnFirstMove == true) //If the piece that we are moving is a pawn, check if it is the first move
         {
             reference.GetComponent<ChessPieceController>().isPawnFirstMove = false;
+            reference.GetComponent<ChessPieceController>().SetPassant(true);
         }
 
         if (reference.GetComponent<ChessPieceController>().pieceCode == 2) //If this piece is a rook, check if it is the first move

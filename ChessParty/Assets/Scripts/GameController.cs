@@ -11,6 +11,8 @@ public class GameController : MonoBehaviour
     private GameObject[,] positions = new GameObject[8,8];
     public GameObject[] playerBlack = new GameObject[16];
     public GameObject[] playerWhite = new GameObject[16];
+    private GameObject playerWhitePassantPawn;
+    private GameObject playerBlackPassantPawn;
         //Check for whose turn and if it is check
     private bool isWhitesTurn = true;
     private bool isCheckWhite = false;
@@ -197,5 +199,48 @@ public class GameController : MonoBehaviour
     public GameObject GetPositions(int x1,int y1)
     {
         return positions[x1,y1];
+    }
+
+    public void SetPassantPawn(GameObject pawn, bool isWhite)
+    {
+        if(isWhite)
+        {
+            playerWhitePassantPawn = pawn;
+        } else
+        {
+            playerBlackPassantPawn = pawn;
+        }
+    }
+
+    public GameObject CheckPassantPawn(bool isWhite)
+    {
+        if(isWhite)
+        {
+
+            return playerWhitePassantPawn;
+
+        } else if(!isWhite)
+        {
+
+            return playerBlackPassantPawn;
+
+        } else
+        {
+            Debug.Log("Something went wrong while trying to find the passant pawn");
+            return null;
+        }
+    }
+
+    public void ResetPassantPawn()
+    {
+        if(playerWhitePassantPawn != null)
+        {
+            playerWhitePassantPawn = null;
+        }
+
+        if(playerBlackPassantPawn != null)
+        {
+            playerBlackPassantPawn = null;
+        }
     }
 }
