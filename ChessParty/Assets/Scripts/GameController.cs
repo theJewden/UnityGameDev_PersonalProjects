@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
     ///Variables
         //Game Objects
     public GameObject chessPiece;
+    public GameObject timer;
     private GameObject[,] positions = new GameObject[8,8];
     public GameObject[] playerBlack = new GameObject[16];
     public GameObject[] playerWhite = new GameObject[16];
@@ -54,6 +55,8 @@ public class GameController : MonoBehaviour
         playerWhite[0].GetComponent<ChessPieceController>().SetRookLocation("Left");
         playerBlack[7].GetComponent<ChessPieceController>().SetRookLocation("Left");
         playerWhite[7].GetComponent<ChessPieceController>().SetRookLocation("Right");
+
+        StartTurnTimer("White");
     }
 
    public GameObject Create(string pieceName, int x, int y) //This create function allows us to use our array from earlier to assign attributes to our pieces, like name and position
@@ -116,9 +119,11 @@ public class GameController : MonoBehaviour
         if(player == "White")
         {
             isWhitesTurn = true;
+            StartTurnTimer(player);
         } else if(player == "Black")
         {
-            isWhitesTurn = false; 
+            isWhitesTurn = false;
+            StartTurnTimer(player);
         }
     }
     public string GetCurrentPlayersTurn()
@@ -242,5 +247,30 @@ public class GameController : MonoBehaviour
         {
             playerBlackPassantPawn = null;
         }
+    }
+
+    public void StartTurnTimer(string player)
+    {
+        if(player == "White")
+        {
+            CreateTimer("White's Turn Timer");
+
+        } else
+        {
+            CreateTimer("Black's Turn Timer");
+        }
+    }
+
+    public GameObject CreateTimer(string nam)
+    {
+        GameObject theTimer = Instantiate(timer, new Vector3(0, 0, -1), Quaternion.identity);
+        TurnTimer turnTimer = theTimer.GetComponent<TurnTimer>();
+
+        turnTimer.name = nam;
+        turnTimer.isWhitesTurn = isWhitesTurn;
+        turnTimer.StartTimer(1f);
+
+
+        return theTimer;
     }
 }
